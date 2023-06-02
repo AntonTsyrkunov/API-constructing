@@ -3,7 +3,8 @@ const {Contact} = require('../models/contact');
 const { HttpError, cntrlWrapper } = require("../helpers");
 
 const getAllContacts = async (req, res) => {
-  const result = await Contact.find({});
+  const {_id: owner} = req.user;
+  const result = await Contact.find({owner}).populate("owner", "name email");
   res.json(result);
 };
 
@@ -18,8 +19,10 @@ const getContactById = async (req, res) => {
 };
 
 const postContact = async (req, res) => {
-  const result = await Contact.create(req.body);
+  const {_id: owner} = req.user;
+  const result = await Contact.create({...req.body, owner});
   res.status(201).json(result);
+
 };
 
 const deleteContact = async (req, res) => {
@@ -34,7 +37,6 @@ const deleteContact = async (req, res) => {
 };
 
 const putContact = async (req, res) => {
-  
   const { contactId } = req.params;
   const result = await Contact.findByIdAndUpdate(contactId, req.body, {new:true});
   if (!result) {
