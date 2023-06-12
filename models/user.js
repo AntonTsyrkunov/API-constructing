@@ -50,7 +50,6 @@ const loginSchema = Joi.object({
 
 const verifySchema = Joi.object({
   email: Joi.string().required(),
-
 })
 
 const schemas = {

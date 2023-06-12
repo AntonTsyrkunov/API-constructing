@@ -22,17 +22,17 @@ const register = async (req, res) => {
   }
   const hashPassword = await bcrypt.hash(password, 10);
   const avatarURL = gravatar.url(email);
-  const verificationCode = uuidv4();
+  const verificationToken = uuidv4();
   const newUser = await User.create({ ...req.body, 
     password: hashPassword, 
     avatarURL, 
-    verificationCode});
-  const verifyEm = {
-    to: email,
-    subject: "verify email",
-    html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationCode}">Verify</a>`
-  }
-  await sendEmail(verifyEm);
+    verificationToken});
+    const verifyEmail = {
+      to: email,
+      subject: "Verify email",
+      html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click verify email</a>`
+  };
+  await sendEmail(verifyEmail);
   res.status(201).json({
     user: {
       email: newUser.email,
@@ -45,9 +45,9 @@ const verifyEmail = async (req, res) => {
   const {verificationToken} = req.params;
   const user = await User.findOne({verificationToken});
   if(!user){
-      throw HttpError(404, "User not found")
+      throw HttpError(401, "User not found")
     }
-  await User.findByIdAndUpdate(user._id, {verify: true, verificationCode: ""});
+  await User.findByIdAndUpdate(user._id, {verify: true, verificationToken: ""});
   res.json({
     message: "Verification successful"
   })
