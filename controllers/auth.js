@@ -30,7 +30,7 @@ const register = async (req, res) => {
     const verifyEmail = {
       to: email,
       subject: "Verify email",
-      html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click verify email</a>`
+      html: `<a target="_blank" href="${BASE_URL}/users/verify/${verificationToken}">Click verify email</a>`
   };
   await sendEmail(verifyEmail);
   res.status(201).json({
@@ -49,7 +49,7 @@ const verifyEmail = async (req, res) => {
     }
   await User.findByIdAndUpdate(user._id, {verify: true, verificationToken: ""});
   res.json({
-    message: "Verification successful"
+    message: "Verification email sent"
   })
 }
 
@@ -66,7 +66,7 @@ const resendVerifyEmail = async(req, res)=> {
   const verifyEmail = {
       to: email,
       subject: "Verify email",
-      html: `<a target="_blank" href="${BASE_URL}/api/users/${user.verificationToken}">Click verify email</a>`
+      html: `<a target="_blank" href="${BASE_URL}/users/verify/${verificationToken}">Click verify email</a>`
   };
 
   await sendEmail(verifyEmail);
